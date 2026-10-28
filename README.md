@@ -9,4 +9,6 @@ It checks every detail against the form's rules (NRIC, shares = 100 %, relations
 
 **Privacy:** everything runs in your browser. Customer details are never uploaded. The saved customer list lives only in the browser on your own device. Photo reading (OCR) downloads the text-reading engine from jsDelivr on first use; the photo itself stays on your device.
 
-Open the app: see the GitHub Pages link in this repository's About section.
+**Open the app:** https://tktan84.github.io/nominee-form-app/ 
+
+**Install on your phone:** Android (Chrome): menu ⋮ → *Install app* / *Add to Home screen*, or the app's **Install app** button. iPhone (Safari): Share → *Add to Home Screen*.

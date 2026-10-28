@@ -1,0 +1,16 @@
+{
+  "name": "Nominee Form",
+  "short_name": "Nominee Form",
+  "description": "Fill the GE nominee form from the policyowner PDF and the customer's WhatsApp reply. Runs on your device; customer data is not uploaded.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f4f2ee",
+  "theme_color": "#14233b",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

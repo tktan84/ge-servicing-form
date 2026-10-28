@@ -4,6 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Nominee Form App</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#14233b">
+<link rel="icon" type="image/png" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Nominee Form">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<script>if ("serviceWorker" in navigator && location.protocol === "https:") addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));</script>
 <style>
 :root{
   --bg:#f4f2ee;--card:#ffffff;--ink:#16202f;--muted:#5d6878;--faint:#8a94a3;--line:#e4e1da;--soft:#f8f7f4;--field:#fff;
@@ -265,8 +274,9 @@ body.noscroll{overflow:hidden}
 <header class="top"><div class="in">
   <div class="brand">
     <div class="logo" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="m9 15 2 2 4-4"/></svg></div>
-    <div class="grow"><h1>Nominee Form</h1><div class="sub">Appointment / Change of Nominee(s) · GE form NBZ-FNOMI-V07-082025 · <span class="ver">Version 28 Oct 2026, 10:17</span></div></div>
+    <div class="grow"><h1>Nominee Form</h1><div class="sub">Appointment / Change of Nominee(s) · GE form NBZ-FNOMI-V07-082025 · <span class="ver">Version 28 Oct 2026, 10:26</span></div></div>
     <span class="chip-lock" title="Customer data is processed in this browser only"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Stays on this PC</span>
+    <button class="btn-ghost" id="installBtn" type="button" hidden><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Install app</button>
     <button class="btn-ghost" id="openList" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Customers <span class="count" id="listCount">0</span></button>
     <button class="btn-ghost" id="clearAll" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>New customer</button>
   </div>
@@ -1023,6 +1033,18 @@ window.addEventListener("dragover", (e) => e.preventDefault());   // a missed dr
 window.addEventListener("drop", (e) => e.preventDefault());
 
 document.body.insertAdjacentHTML("beforeend", `<datalist id="relList">${REL_OPTIONS.map((r) => `<option value="${r}">`).join("")}</datalist>`);
+// ---- "Install app" (Android / desktop Chrome & Edge offer this; on iPhone use Safari > Share > Add to Home Screen)
+let installPrompt = null;
+window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); installPrompt = e; $("installBtn").hidden = false; });
+$("installBtn").onclick = async () => {
+  if (!installPrompt) return;
+  installPrompt.prompt();
+  const { outcome } = await installPrompt.userChoice;
+  installPrompt = null; $("installBtn").hidden = true;
+  if (outcome === "accepted") toast("Installed - find “Nominee Form” on your home screen");
+};
+window.addEventListener("appinstalled", () => { $("installBtn").hidden = true; });
+
 purgeOld();
 renderEditor();
 resetDates();
