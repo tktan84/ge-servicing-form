@@ -113,17 +113,12 @@ details.more[open] summary::before{transform:rotate(90deg)}
 .mode:hover{color:var(--on-navy)}
 .mode.active{background:var(--bg);color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.18)}
 .mode .count{background:var(--accent)}
-body.mode-forms .steps,body.mode-forms #result,body.mode-forms #nomCard,body.mode-forms .tile[data-drop="photo"],body.mode-forms .tile[data-drop="chat"]{display:none!important}
-body.mode-forms .quick-in{grid-template-columns:minmax(0,1fr)}
-body:not(.mode-forms) #formsPanel{display:none!important}
-body.mode-forms .top .in{padding-bottom:16px}
 
 /* ---------- other GE forms list */
 .flist{display:grid;gap:10px;margin:14px 0}
 .fitem{border:1px solid var(--line);border-radius:12px;background:var(--card);transition:border-color .15s,box-shadow .15s}
 .fitem.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
 .fhead{display:flex;flex-direction:row;gap:12px;align-items:flex-start;padding:12px;cursor:pointer;color:var(--ink);font-weight:400}
-body.mode-forms .nom-only{display:none!important}
 .fhead input{width:20px;height:20px;margin:2px 0 0;accent-color:var(--accent);flex:none}
 .fhead .ft{flex:1;min-width:0}
 .fhead b{display:block;font-size:14px}
@@ -303,15 +298,11 @@ body.noscroll{overflow:hidden}
 <header class="top"><div class="in">
   <div class="brand">
     <div class="logo" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="m9 15 2 2 4-4"/></svg></div>
-    <div class="grow"><h1>Nominee Form</h1><div class="sub">Appointment / Change of Nominee(s) · GE form NBZ-FNOMI-V07-082025 · <span class="ver">Version 28 Oct 2026, 10:57</span></div></div>
+    <div class="grow"><h1>Nominee Form</h1><div class="sub">Appointment / Change of Nominee(s) · GE form NBZ-FNOMI-V07-082025 · <span class="ver">Version 28 Oct 2026, 11:17</span></div></div>
     <span class="chip-lock" title="Customer data is processed in this browser only"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Stays on this PC</span>
     <button class="btn-ghost" id="installBtn" type="button" hidden><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Install app</button>
     <button class="btn-ghost" id="openList" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Customers <span class="count" id="listCount">0</span></button>
     <button class="btn-ghost" id="clearAll" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>New customer</button>
-  </div>
-  <div class="modes" role="tablist" aria-label="Choose what to fill">
-    <button class="mode active" type="button" role="tab" aria-selected="true" data-mode="nominee">Nominee form</button>
-    <button class="mode" type="button" role="tab" aria-selected="false" data-mode="forms">Other GE forms <span class="count" id="formsCount">8</span></button>
   </div>
   <ol class="steps" id="steps">
     <li data-step="1" class="active"><span class="n">1</span><span><b>Policyowner</b><span class="d">Upload PDF or type</span></span></li>
@@ -426,9 +417,9 @@ body.noscroll{overflow:hidden}
 <div class="side">
   <section class="card" id="result" aria-live="polite"></section>
   <section class="card" id="formsPanel" aria-labelledby="hForms">
-    <div class="card-h"><span class="num">GE</span><h2 id="hForms">Other GE forms</h2></div>
+    <div class="card-h"><span class="num">3</span><h2 id="hForms">Forms to print</h2></div>
     <div class="card-b">
-      <p class="hint">Uses the policyowner details, signing date and witness from step 1. Tick the forms you need, add any extra details, then preview and download.</p>
+      <p class="hint">Tick every form you need: the nominee form and any other GE form. They all use the policyowner details, signing date and witness from step 1. One preview, one PDF.</p>
       <div class="dates">
         <div class="dates-h">Life assured</div>
         <label class="chkbox"><input type="checkbox" id="la_same" checked> Life assured is the policyowner</label>
@@ -611,11 +602,12 @@ function evaluate() {
     notes: edited ? (base.notes || []).filter((n) => !/^(Nominee|Trustee)/.test(n)) : base.notes });
   const chats = info || noms.length || trs.length ? [chat] : [];
   const cfg = Object.assign({}, CFG, { witness_agent: { name: $("w_name").value.trim(), iac: $("w_iac").value.trim() }, witness_agent_by_rm: {} });
-  if (!text.trim() && !v.client_name && !v.nric && !chats.length) { current = null; render(); return; }
+  if (!text.trim() && !v.client_name && !v.nric && !chats.length) { current = null; render(); updateForms(); return; }
   current = E.buildCase({ deal, client, chats, cfg, fmap: FMAP, today: todayIso() });
   applyDates(current);
   current.followup = E.followupMessage(current, REQUEST);
   render();
+  updateForms();
   saveCase();
 }
 
@@ -876,10 +868,9 @@ function render() {
   </div>
   ${c.followup ? `<div class="sec"><div class="wa"><div class="wa-h">${ICON.wa} WhatsApp message for the customer</div><pre>${esc(c.followup)}</pre><button class="btn" id="copyFu" type="button">Copy message</button></div></div>` : ""}
   <div class="cta">
-    <button class="btn primary big" id="pv" type="button">${ICON.eye} Preview form</button>
-    <p class="small muted">${errs.length ? "You can preview what is filled so far; the form isn't ready to submit yet." : "Check each page, then download. Signatures stay blank for signing day."}</p>
+    <p class="small muted" style="margin:0;text-align:left">${errs.length ? "You can still preview what is filled so far; the form isn't ready to submit yet." : "Ready."} Preview and download it with <button class="link" type="button" id="toForms">Forms</button> below, together with any other GE forms you tick.</p>
   </div>`;
-  $("pv").onclick = openPreview;
+  $("toForms").onclick = () => $("formsPanel").scrollIntoView({ behavior: "smooth", block: "start" });
   if ($("copyFu")) $("copyFu").onclick = () => copy(c.followup);
   box.querySelectorAll("[data-jump]").forEach((b) => { b.onclick = () => { const [t, i, k] = b.dataset.jump.split(":"); jumpTo(t, +i, k); }; });
 }
@@ -900,24 +891,6 @@ async function showPreview({ bytes, title, label, cls, summary, dlLabel, name, n
   $("preview").hidden = false; document.body.classList.add("noscroll");
   $("pvBack").focus();
   await E.renderPages(bytes, $("pvPages"));
-}
-
-async function openPreview() {
-  const btn = $("pv"); btn.disabled = true; btn.innerHTML = "Preparing preview...";
-  try {
-    const { bytes, ff } = await E.PDF.fillNomination(getTemplate(), FMAP, current);
-    if (ff.missingFields.length) console.warn("Fields not in template:", ff.missingFields);
-    previewCase = current;
-    const [label, cls] = STATUS[current.status];
-    const nErr = current.issues.filter((i) => i.level === "ERROR").length, nWarn = current.issues.filter((i) => i.level === "WARNING").length;
-    await showPreview({ bytes, title: current.client_name || "Nominee form", label, cls, nominee: true, name: fileName(current),
-      summary: nErr ? `<b class="bad-text">${nErr} item(s) still missing or wrong</b>, so this form is not ready to submit.`
-        : `Check every page against the customer's details.${nWarn ? ` ${nWarn} point(s) to check on the main screen.` : ""}`,
-      dlLabel: nErr ? "Download INCOMPLETE form" : "Looks right - download PDF" });
-  } catch (e) {
-    alert("Could not fill the form: " + e.message);
-    closePreview();
-  } finally { btn.disabled = false; btn.innerHTML = `${ICON.eye} Preview form`; }
 }
 
 function closePreview() { $("preview").hidden = true; document.body.classList.remove("noscroll"); $("pvPages").innerHTML = ""; }
@@ -1105,23 +1078,17 @@ window.addEventListener("drop", (e) => e.preventDefault());
 
 document.body.insertAdjacentHTML("beforeend", `<datalist id="relList">${REL_OPTIONS.map((r) => `<option value="${r}">`).join("")}</datalist>`);
 // ---- other GE forms: share step 1's details, tick forms, preview and download them as one PDF
-let mode = "nominee";
-let formSel = {}, formExtras = {};
+let formSel = { nominee: true }, formExtras = {};
 const formTemplates = {};
 const b64bytes = (b64) => { const s = atob(b64); const u = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u; };
 const formBytes = (f) => formTemplates[f.id] || (formTemplates[f.id] = b64bytes(f.b64));
-function setMode(m) {
-  mode = m;
-  document.body.classList.toggle("mode-forms", m === "forms");
-  document.querySelectorAll(".mode").forEach((b) => { const on = b.dataset.mode === m; b.classList.toggle("active", on); b.setAttribute("aria-selected", String(on)); });
-  store("mode", m);
-  updateForms();
-}
-document.querySelectorAll(".mode").forEach((b) => { b.onclick = () => setMode(b.dataset.mode); });
-$("formsCount").textContent = OTHER_FORMS.length;
+// the nominee form is the first entry of the same list, so one button prints everything
+const NOMINEE_ITEM = { id: "nominee", title: "Nominee form - appointment / change of nominee(s)", code: "NBZ-FNOMI-V07-082025", pages: 5,
+  signs: "Policyowner, witness (and trustee)", note: "Uses the nominees from step 2 and the checks above." };
+const ALL_FORMS = [NOMINEE_ITEM, ...OTHER_FORMS];
 
 function renderFormList() {
-  $("formList").innerHTML = OTHER_FORMS.map((f) => `
+  $("formList").innerHTML = ALL_FORMS.map((f) => `
     <div class="fitem${formSel[f.id] ? " on" : ""}" id="fi-${f.id}">
       <label class="fhead"><input type="checkbox" data-form="${f.id}" ${formSel[f.id] ? "checked" : ""}>
         <span class="ft"><b>${esc(f.title)}</b><small>${esc(f.code)} · ${f.pages} page${f.pages > 1 ? "s" : ""} · signed by ${esc(f.signs)}</small></span></label>
@@ -1141,9 +1108,16 @@ function formsInput() {
 function updateForms() {
   $("laFields").hidden = $("la_same").checked;
   const data = E.FORMS.buildData(formsInput());
-  const sel = OTHER_FORMS.filter((f) => formSel[f.id]);
+  const sel = ALL_FORMS.filter((f) => formSel[f.id]);
   for (const f of sel) {
     const el = $("fs-" + f.id); if (!el) continue;
+    if (f.id === "nominee") {
+      const nErr = current ? current.issues.filter((i) => i.level === "ERROR").length : 0;
+      el.className = "fstat " + (current && !nErr ? "ok" : "miss");
+      el.textContent = !current ? "Add the policyowner and nominee details first (steps 1 and 2)."
+        : nErr ? `${STATUS[current.status][0]} - ${nErr} item(s) to fix (see the checks above)` : "✓ " + STATUS[current.status][0];
+      continue;
+    }
     const miss = E.FORMS.missing(f, data);
     el.className = "fstat " + (miss.length ? "miss" : "ok");
     el.textContent = miss.length ? `Not filled yet (left blank on the form): ${miss.join(", ")}` : "✓ All details ready";
@@ -1161,32 +1135,47 @@ $("formList").addEventListener("change", (e) => {
 $("formList").addEventListener("input", (e) => { const x = e.target.dataset.extra; if (!x) return; formExtras[x] = e.target.value; });
 $("la_same").addEventListener("change", () => { updateForms(); saveCase(); });
 let formsTimer = null;
-document.addEventListener("input", () => { clearTimeout(formsTimer); formsTimer = setTimeout(() => { updateForms(); if (mode === "forms") saveCase(); }, 250); });
+document.addEventListener("input", () => { clearTimeout(formsTimer); formsTimer = setTimeout(() => { updateForms(); saveCase(); }, 250); });
 
+/** The one preview button: every ticked form (nominee form first) filled, shown together, downloaded as one PDF. */
 async function previewForms() {
-  const sel = OTHER_FORMS.filter((f) => formSel[f.id]); if (!sel.length) return;
+  let sel = ALL_FORMS.filter((f) => formSel[f.id]); if (!sel.length) return;
   const btn = $("pvForms"); btn.disabled = true; btn.textContent = "Preparing preview...";
   try {
     const data = E.FORMS.buildData(formsInput());
     const filled = [], missAll = [];
+    let nomErr = 0, nomDone = false;
     for (const f of sel) {
+      if (f.id === "nominee") {
+        if (!current) { missAll.push(`<li><b>Nominee form</b>: not included - add the policyowner and nominee details first</li>`); continue; }
+        const { bytes } = await E.PDF.fillNomination(getTemplate(), FMAP, current);
+        filled.push(bytes); nomDone = true; previewCase = current;
+        nomErr = current.issues.filter((i) => i.level === "ERROR").length;
+        if (nomErr) missAll.push(`<li><b>Nominee form</b>: ${nomErr} item(s) still missing or wrong - not ready to submit</li>`);
+        continue;
+      }
       filled.push(await E.FORMS.fillForm(formBytes(f), f, data));
       const m = E.FORMS.missing(f, data);
-      if (m.length) missAll.push(`<li><b>${esc(f.title)}</b>: ${esc(m.join(", "))}</li>`);
+      if (m.length) missAll.push(`<li><b>${esc(f.title)}</b>: blank - ${esc(m.join(", "))}</li>`);
     }
+    if (!filled.length) { alert("Nothing to preview yet - add the customer's details first."); return; }
     const bytes = filled.length === 1 ? filled[0] : await E.FORMS.mergeForms(filled);
-    const who = data.po_name || data.la_name || "Customer";
-    await showPreview({ bytes, title: `${sel.length === 1 ? sel[0].title : sel.length + " GE forms"} · ${who}`,
-      label: missAll.length ? "Some boxes blank" : "Ready to print", cls: missAll.length ? "wait" : "ok",
-      summary: missAll.length ? `Left blank - fill by hand, or go back and add them:<ul style="margin:4px 0 0;padding-left:18px">${missAll.join("")}</ul>`
-        : "Check every page, then download. Signatures and the form's own answers are completed by hand.",
-      dlLabel: "Looks right - download PDF", name: `${safeName(who)}_${sel.length === 1 ? sel[0].id.toUpperCase() : "GE_Forms"}.pdf` });
+    const who = (current && current.client_name) || data.po_name || data.la_name || "Customer";
+    const n = filled.length;
+    const onlyNominee = n === 1 && nomDone;
+    await showPreview({ bytes, nominee: nomDone,
+      title: `${n === 1 ? (nomDone ? "Nominee form" : sel.find((f) => f.id !== "nominee").title) : n + " forms"} · ${who}`,
+      label: nomErr ? "Needs info" : missAll.length ? "Some boxes blank" : "Ready to print", cls: nomErr ? "bad" : missAll.length ? "wait" : "ok",
+      summary: missAll.length ? `Please note:<ul style="margin:4px 0 0;padding-left:18px">${missAll.join("")}</ul>`
+        : "Check every page, then download. Signatures and the forms' own answers are completed by hand.",
+      dlLabel: nomErr ? "Download (nominee form INCOMPLETE)" : "Looks right - download PDF",
+      name: onlyNominee ? fileName(current) : `${nomErr ? "INCOMPLETE_" : ""}${safeName(who)}_${n === 1 ? sel.find((f) => f.id !== "nominee").id.toUpperCase() : "Forms"}.pdf` });
   } catch (e) { alert("Could not fill the form: " + e.message); closePreview(); }
   finally { updateForms(); }
 }
 $("pvForms").onclick = previewForms;
 function resetForms(d = {}) {
-  formSel = Object.assign({}, d.sel || {}); formExtras = Object.assign({}, d.extras || {});
+  formSel = Object.assign({ nominee: true }, d.sel || {}); formExtras = Object.assign({}, d.extras || {});
   const la = d.la || {};
   $("la_same").checked = la.same !== false;
   for (const k of ["la_name", "la_nric", "la_old", "la_tel"]) $(k).value = la[k.slice(3)] || "";
@@ -1210,7 +1199,6 @@ renderEditor();
 resetDates();
 render();
 resetForms();
-setMode(recall("mode") === "forms" ? "forms" : "nominee");
 </script>
 </body>
 </html>
