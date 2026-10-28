@@ -180,6 +180,11 @@ label.chkbox input{width:auto;margin:0}
 .ed-empty{color:var(--muted);font-size:13px;margin:0 0 8px}
 .tagp.jump{cursor:pointer}
 
+/* ---------- help */
+.help h3{font-size:14.5px;margin:18px 0 6px}.help h3:first-child{margin-top:4px}
+.help p{margin:0 0 10px;font-size:13.5px;line-height:1.55}
+.help .zh{color:var(--muted)}
+
 /* ---------- customer list */
 .drawer{position:fixed;inset:0;z-index:25;display:flex;justify-content:flex-end;background:rgba(10,16,26,.45)}
 .drawer[hidden]{display:none}
@@ -298,9 +303,10 @@ body.noscroll{overflow:hidden}
 <header class="top"><div class="in">
   <div class="brand">
     <div class="logo" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="m9 15 2 2 4-4"/></svg></div>
-    <div class="grow"><h1>Nominee Form</h1><div class="sub">Appointment / Change of Nominee(s) · GE form NBZ-FNOMI-V07-082025 · <span class="ver">Version 28 Oct 2026, 11:23</span></div></div>
+    <div class="grow"><h1>Nominee Form</h1><div class="sub">Appointment / Change of Nominee(s) · GE form NBZ-FNOMI-V07-082025 · <span class="ver">Version 28 Oct 2026, 11:28</span></div></div>
     <span class="chip-lock" title="Customer data is processed in this browser only"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Stays on this PC</span>
     <button class="btn-ghost" id="installBtn" type="button" hidden><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Install app</button>
+    <button class="btn-ghost" id="openHelp" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17h.01"/></svg>Help</button>
     <button class="btn-ghost" id="openList" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Customers <span class="count" id="listCount">0</span></button>
     <button class="btn-ghost" id="clearAll" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>New customer</button>
   </div>
@@ -410,6 +416,14 @@ body.noscroll{overflow:hidden}
         <button class="btn" id="addNom" type="button">+ Add nominee</button>
         <button class="btn" id="addTr" type="button">+ Add trustee</button>
       </div>
+      <label style="margin-top:14px">Trustee (form Part 2)
+        <select id="part2">
+          <option value="">Automatic - "Appoint" when a trustee is listed</option>
+          <option value="appoint">Appoint the trustee(s) listed</option>
+          <option value="add">Add the trustee(s) listed to the existing trustee(s)</option>
+          <option value="revoke_and_appoint">Revoke all existing trustees and appoint the ones listed</option>
+          <option value="revoke">Revoke all existing trustees (no new trustee)</option>
+        </select></label>
     </div>
   </section>
 </div>
@@ -456,7 +470,34 @@ body.noscroll{overflow:hidden}
   <div class="drawer-in">
     <div class="drawer-h"><h2 id="drawerTitle">Customers</h2><button class="btn" id="closeList" type="button">Close</button></div>
     <div class="drawer-b" id="custList"></div>
-    <div class="drawer-f">Saved automatically in this browser on this PC only. Customers whose form was downloaded more than 30 days ago are removed automatically. Delete a customer with ✕.</div>
+    <div class="drawer-f">
+      <div class="row" style="margin:0 0 8px">
+        <button class="btn" id="exportCases" type="button">Export backup</button>
+        <label class="btn" style="flex-direction:row">Import backup<input type="file" id="importCases" accept=".json,application/json" hidden></label>
+      </div>
+      Saved automatically in this browser on this device only. Export a backup before changing phone or clearing the browser; the backup file contains customers' details, so keep it private. Customers whose form was downloaded more than 30 days ago are removed automatically. Delete a customer with ✕.
+    </div>
+  </div>
+</div>
+<div class="drawer" id="helpDrawer" hidden role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+  <div class="drawer-in">
+    <div class="drawer-h"><h2 id="helpTitle">How to use · 使用方法</h2><button class="btn" id="closeHelp" type="button">Close</button></div>
+    <div class="drawer-b help">
+      <h3>1 · Policyowner 保单持有人</h3>
+      <p>Tap <b>Policyowner PDF</b> at the top and choose the ePartner <b>Online Enquiry</b> printout (or e-Policy / GE form). Name, NRIC, policy no., Muslim, address fill in by themselves (green boxes). Type anything missing: tel, marital status, children.<br><span class="zh">点顶部「Policyowner PDF」上传 ePartner Online Enquiry，资料会自动填入（绿色格子）。缺的资料（电话、婚姻状况、孩子人数）自己补上。</span></p>
+      <p><b>Signing date</b> defaults to today. <b>Witness</b> is TAN TECK KANG / 6180237 - tap <b>Change</b> for another agent (this customer only).<br><span class="zh">签名日期默认今天；见证人默认 TAN TECK KANG，点 Change 可换其他 agent（只限这位客户）。</span></p>
+      <h3>2 · Nominees 受益人</h3>
+      <p>Tap <b>Screenshot / photo</b> (the customer's WhatsApp reply) or <b>Copied message</b>, or paste the message. Nominees appear as boxes below - fix anything there. Red tags on the right (e.g. <b>Relationship?</b>) jump to the box to fix.<br><span class="zh">上传客户 WhatsApp 截图或消息，受益人会出现在下方格子里，可直接修改。右边红色标签点一下就跳到要改的地方。</span></p>
+      <p>Trustee changes: choose <b>Trustee (form Part 2)</b> - appoint, add, revoke & appoint, or revoke.<br><span class="zh">更换信托人：在「Trustee (form Part 2)」选择委任、追加、撤销后委任或撤销。</span></p>
+      <h3>3 · Forms to print 打印表格</h3>
+      <p>Tick the forms you need - the nominee form and any GE form (Great ID, PSF01, PSF33, EASI-PAY, NFTF, questionnaires, O&amp;G, clinical abstract). Fill the extra boxes shown under a ticked form. Then tap the one <b>Preview</b> button, check every page, and <b>download</b> - all ticked forms come out as one PDF.<br><span class="zh">勾选需要的表格（提名表格和其他 GE 表格），填写额外资料，按一个 Preview 按钮预览，确认后下载成一份 PDF。</span></p>
+      <p>Left for hand-writing: signatures, card numbers, health answers, the doctor's report.<br><span class="zh">签名、信用卡号、健康问卷答案、医生报告留给本人亲手填写。</span></p>
+      <h3>Customers 客户列表</h3>
+      <p>Every customer is saved on this device. <b>Customers</b> reopens one; <b>New customer</b> starts fresh. Use <b>Export backup</b> in the Customers list to keep a copy, and <b>Import backup</b> on a new phone or PC.<br><span class="zh">客户资料自动保存在这台设备。换手机或电脑前，在 Customers 里按 Export backup 备份，到新设备再 Import backup。</span></p>
+      <h3>Privacy 隐私</h3>
+      <p>Everything stays on this device - nothing is uploaded. Reading a photo needs internet the first time (to load the reader); the photo itself never leaves the device.<br><span class="zh">所有资料只留在这台设备，不会上传。</span></p>
+      <p class="muted small">Check the version under the title; if the page looks old, refresh (Ctrl+F5, or pull down on a phone).</p>
+    </div>
   </div>
 </div>
 <div class="toast" id="toast" role="status"></div>
@@ -507,7 +548,7 @@ end`},Yg=function(){for(var t=[],e=0;e<arguments.length;e++)t[e]=arguments[e];re
 `)+`
 Q EMC
 `)),g=this.ctx.stream(m,{Type:"XObject",Subtype:"Form",BBox:[0,0,s,u],Resources:{Font:{HelvF:this.font.ref}}});r.set(Ke("AP"),this.ctx.obj({N:this.ctx.register(g)}))}setChoice(e,r){if(!r)return;let n=this.fields.get(e);if(!n){this.missingFields.push(e);return}let i=r.replace(/^\//,"");n.obj.set(Ke("V"),Ke(i));let a=!1;for(let s of n.widgets){let u=s.lookup(Ke("AP")),d=u instanceof Gs?u.lookup(Ke("N")):null;(d instanceof Gs?d.keys().map(String):[]).includes("/"+i)?(s.set(Ke("AS"),Ke(i)),a=!0,this.drawTick(s,d,i)):s.set(Ke("AS"),Ke("Off"))}if(!a)throw new Error(`'${e}' has no option ${r}`);this.filled[e]=r}drawTick(e,r,n){let i=e.lookup(Ke("Rect")).asArray().map(c=>c.asNumber()),a=Math.abs(i[2]-i[0]),s=Math.abs(i[3]-i[1]),u=lb(r.lookup(Ke("Off"))),o=`q 0 g 0 G ${Math.max(1.2,Math.min(a,s)*.12).toFixed(2)} w 1 J 1 j ${(a*.2).toFixed(2)} ${(s*.52).toFixed(2)} m ${(a*.42).toFixed(2)} ${(s*.24).toFixed(2)} l ${(a*.82).toFixed(2)} ${(s*.8).toFixed(2)} l S Q`,l=this.ctx.stream(ob(u,wf(`
-`+o)),{Type:"XObject",Subtype:"Form",BBox:[0,0,a,s],Resources:{}});r.set(Ke(n),this.ctx.register(l))}hide(e){for(let r of e){let n=this.fields.get(r);if(!n){this.missingFields.push(r);continue}for(let i of n.widgets)i.set(Ke("F"),Gl.of(2))}}async save(){let e=this.doc.catalog.lookup(Ke("AcroForm"));return e instanceof Gs&&e.set(Ke("NeedAppearances"),dT.False),this.doc.save({updateFieldAppearances:!1})}};async function xT(t,e,r){let n=await Hl.open(t),i=r.proposer;n.setText(e.proposal_no,(r.proposal_no||"").slice(0,10)),n.setText(e.policy_no,(r.policy_no||"").slice(0,10));let a=e.proposer;n.setText(a.name,i.name.toUpperCase().slice(0,28)),n.setText(a.signature_name,i.name.toUpperCase()),n.setText(a.nric,i.nric_clean||""),(i.muslim===!0||i.muslim===!1)&&n.setChoice(a.muslim.field,a.muslim.states[i.muslim?"yes":"no"]),i.status&&n.setChoice(a.status.field,a.status.states[i.status]),i.children!==null&&i.children!==void 0&&(n.setChoice(a.children.field,a.children.states[i.children>0?"yes":"no"]),i.children>0&&n.setText(a.children_count,yT(i.children)));let s=(c,f,p)=>{let h=c.prefix.replace("{i}",f);if(c.name.forEach((v,m)=>{p.name_lines&&p.name_lines[m]&&n.setText(h+v,p.name_lines[m])}),p.id_kind==="nric")n.setText(h+c.nric,p.id);else if(p.id_kind==="passport"&&(n.setText(h+c.nric,p.id.slice(0,12)),p.passport_expiry)){let[v,m,g]=p.passport_expiry.split("-");n.setText(h+c.passport_expiry,g+m+v)}if(p.gender&&n.setChoice(h+c.gender.field,c.gender.states[p.gender]),p.dob){let[v,m,g]=p.dob.split("-");[g,m,v.slice(-2)].forEach((y,F)=>n.setText(h+c.dob[F],y))}n.setChoice(h+c.nationality.field,c.nationality.states[p.malaysian?"malaysian":"others"]),p.malaysian||n.setText(h+c.nationality_other,p.nationality_other||""),c.address.forEach((v,m)=>{p.address_lines&&p.address_lines[m]&&n.setText(h+v,p.address_lines[m])}),n.setText(h+c.postcode,(p.postcode||"").slice(0,5)),n.setText(h+c.town,p.town||""),n.setText(h+c.country,p.country||"")},u=e.nominee;r.nominees.forEach((c,f)=>{let p=f+1,h=u.prefix.replace("{i}",p);s(u,p,c),c.relationship&&(n.setChoice(h+u.relationship.field,u.relationship.states[c.relationship]),c.relationship==="others"&&n.setText(h+u.relationship_other,c.relationship_other||"")),c.share!==null&&c.share!==void 0&&n.setText(h+u.share,String(Math.round(c.share*1e6)/1e6))});let d=e.trustee;r.trustees.length&&n.setChoice(e.part2_action.field,e.part2_action.states.appoint),r.trustees.forEach((c,f)=>{let p=f+1,h=d.prefix.replace("{i}",p);s(d,p,c),(c.cob_malaysia===!0||c.cob_malaysia===!1)&&(n.setChoice(h+d.country_of_birth.field,d.country_of_birth.states[c.cob_malaysia?"malaysian":"others"]),c.cob_malaysia||n.setText(h+d.country_of_birth_other,c.cob_other||"")),c.tel_no&&(n.setText(h+d.tel_no,((c.tel_country||"")+c.tel_no).slice(0,12)),n.setText(h+d.tel_country,c.tel_country==="60"?"MALAYSIA":""),n.setChoice(h+d.tel_type.field,d.tel_type.states[c.tel_type])),n.setText(h+d.signature_name,c.name)});let o=r.witness||{};if(o.name){let c=e.witness_agent;n.setText(c.name_p3,o.name.toUpperCase()),n.setText(c.iac_p3,String(o.iac||"").slice(0,7)),r.trustees.length&&(n.setText(c.name_p4,o.name.toUpperCase()),n.setText(c.iac_p4,String(o.iac||"").slice(0,7)))}let l=c=>{let[f,p,h]=String(c).split("-");return{y:f,m:p,d:h}};if(r.sign_date&&e.declaration_date){let{y:c,m:f,d:p}=l(r.sign_date);n.setText(e.declaration_date,p+f+c)}if(r.trustees.length&&r.trustee_date&&e.trustee_date){let{y:c,m:f,d:p}=l(r.trustee_date);[p,f,c.slice(-2)].forEach((h,v)=>n.setText(e.trustee_date[v],h))}return n.hide(e.hide_on_output||[]),{ff:n,bytes:await n.save()}}async function ST(t){let e=await Hl.open(t),r={};for(let[n,{obj:i}]of e.fields){let a=i.lookup(Ke("V"));a&&String(a)!=="/Off"&&(r[n]=Df(a))}return r}cb.exports={fillNomination:xT,readFields:ST}});var fb=V((h2,hb)=>{"use strict";var bt=Ia(),Ta=t=>t==null||t==="";function AT({deal:t,client:e={},chats:r=[],cfg:n,fmap:i,today:a}){let s=new bt.Issues;t._wa_only?s.add("WARNING","CRM","No Closed-Won life deal in CRM for this customer yet - confirm the product and proposal no. before release"):!Object.keys(e).length&&!t._manual&&s.add("WARNING","Policyholder",`Client ${t.client_id} not found in clients export - details taken from WhatsApp`);let u=null;if(r.length){u={nominees:null,trustees:null,proposer:{},source:{},unparsed:[],media:0,notes:[]};for(let b of r){for(let x of["nominees","trustees"])b[x]&&(u[x]=b[x]);Object.assign(u.proposer,b.proposer),Object.assign(u.source,b.source),u.unparsed.push(...b.unparsed),u.media+=b.media,u.notes.push(...b.notes||[])}}let d=u?u.proposer:{},o=e.address?{address:e.address||"",postcode:e.postcode||"",town:e.town||"",country:e.country||""}:null,l=d.address?bt.parseAddress(d)[0]:null,c={name:e.client_name||d.name||t.client_name||"",nric:e.nric||d.id||"",muslim:Ta(e.muslim)?bt.yesNo(d.muslim):bt.yesNo(e.muslim),status:bt.normStatus(e.marital_status)||bt.normStatus(d.marital_status),children:Ta(e.children)?bt.normChildren(d.children):bt.normChildren(e.children),address_block:o||l,race:d.race||""},f=t._manual?"policy details":"CRM",p=bt.parseNric(e.nric,a).value,h=bt.parseNric(d.id,a).value;p&&h&&p!==h&&s.add("ERROR","Policyholder",`NRIC in ${f} (${bt.maskId(p)}) differs from NRIC in WhatsApp (${bt.maskId(h)}) - wrong chat or wrong record?`);for(let[b,x,E,C]of[["muslim",e.muslim,d.muslim,bt.yesNo],["marital status",e.marital_status,d.marital_status,bt.normStatus],["children",e.children,d.children,bt.normChildren]])!Ta(x)&&!Ta(E)&&C(x)!==C(E)&&s.add("ERROR","Policyholder",`${t._manual?"Policy details say":"CRM says"} ${b} = '${x}' but customer's WhatsApp says '${E}' - confirm${t._manual?"":" and update CRM"}`);if(d.dob){let b=bt.parseDate(d.dob),x=bt.parseNric(c.nric,a);b&&x.dob&&b!==x.dob&&s.add("ERROR","Policyholder","Date of birth in WhatsApp does not match the NRIC","please confirm your NRIC number and date of birth")}Ta(e.muslim)&&Ta(d.muslim)&&c.race&&s.add("INFO","Policyholder",`Race given as '${c.race}' - the agent does not infer religion from race; Muslim Yes/No must be confirmed`);let v=t.proposal_no||d.proposal_no||"",m=t.policy_no||d.policy_no||"";!v&&!m&&s.add("WARNING","Policy","No proposal/policy number - write it in by hand before submission");let g,y,F;if(!u)g="WAITING_FOR_CUSTOMER",[y,F]=[[],[]],bt.validateCase(c,[],[],a,i,s),s.items=s.items.filter(b=>b.who!=="Nominees");else{u.media&&s.add("INFO","WhatsApp",`Customer sent ${u.media} attachment(s) (e.g. IC photo) - not read by the agent; check by eye`);for(let b of u.notes)s.add("INFO","WhatsApp",b);for(let[b,x]of u.unparsed)s.add("WARNING","WhatsApp",`Message${b?` at ${b}`:""} not in labelled format, not used: \u201C${x.slice(0,120)}\u201D`);[y,F]=bt.validateCase(c,u.nominees,u.trustees,a,i,s),g=s.hasErrors()?"NEEDS_INFO":"READY_FOR_APPROVAL"}return{deal_id:t.deal_id,client_id:t.client_id||"",client_name:c.name,owner:t.owner||"",product:t.product||"",amount:t.amount||"",close_date:t.close_date||"",proposal_no:v,policy_no:m,proposer:c,nominees:y,trustees:F,issues:s.items,status:g,sources:u?u.source:{},witness:(n.witness_agent_by_rm||{})[t.owner||""]||n.witness_agent}}function FT(t,e){let r=[];for(let i of t.issues)i.level==="ERROR"&&i.ask&&!r.includes(i.ask)&&r.push(i.ask);let n=t.client_name?bt.title(t.client_name):"";return t.status==="WAITING_FOR_CUSTOMER"?(e||"").replace(/\{first_name\}/g,n).replace(/\{product\}/g,t.product||"insurance"):r.length?[`Hi ${n}, thank you for the nominee details for your ${t.product||"new"} policy. To complete the nomination form I still need:`,...r.map((i,a)=>`${a+1}. ${i[0].toUpperCase()}${i.slice(1)}`),"You can reply in the same format as before. Thank you!"].join(`
+`+o)),{Type:"XObject",Subtype:"Form",BBox:[0,0,a,s],Resources:{}});r.set(Ke(n),this.ctx.register(l))}hide(e){for(let r of e){let n=this.fields.get(r);if(!n){this.missingFields.push(r);continue}for(let i of n.widgets)i.set(Ke("F"),Gl.of(2))}}async save(){let e=this.doc.catalog.lookup(Ke("AcroForm"));return e instanceof Gs&&e.set(Ke("NeedAppearances"),dT.False),this.doc.save({updateFieldAppearances:!1})}};async function xT(t,e,r){let n=await Hl.open(t),i=r.proposer;n.setText(e.proposal_no,(r.proposal_no||"").slice(0,10)),n.setText(e.policy_no,(r.policy_no||"").slice(0,10));let a=e.proposer;n.setText(a.name,i.name.toUpperCase().slice(0,28)),n.setText(a.signature_name,i.name.toUpperCase()),n.setText(a.nric,i.nric_clean||""),(i.muslim===!0||i.muslim===!1)&&n.setChoice(a.muslim.field,a.muslim.states[i.muslim?"yes":"no"]),i.status&&n.setChoice(a.status.field,a.status.states[i.status]),i.children!==null&&i.children!==void 0&&(n.setChoice(a.children.field,a.children.states[i.children>0?"yes":"no"]),i.children>0&&n.setText(a.children_count,yT(i.children)));let s=(f,p,h)=>{let v=f.prefix.replace("{i}",p);if(f.name.forEach((m,g)=>{h.name_lines&&h.name_lines[g]&&n.setText(v+m,h.name_lines[g])}),h.id_kind==="nric")n.setText(v+f.nric,h.id);else if(h.id_kind==="passport"&&(n.setText(v+f.nric,h.id.slice(0,12)),h.passport_expiry)){let[m,g,y]=h.passport_expiry.split("-");n.setText(v+f.passport_expiry,y+g+m)}if(h.gender&&n.setChoice(v+f.gender.field,f.gender.states[h.gender]),h.dob){let[m,g,y]=h.dob.split("-");[y,g,m.slice(-2)].forEach((F,S)=>n.setText(v+f.dob[S],F))}n.setChoice(v+f.nationality.field,f.nationality.states[h.malaysian?"malaysian":"others"]),h.malaysian||n.setText(v+f.nationality_other,h.nationality_other||""),f.address.forEach((m,g)=>{h.address_lines&&h.address_lines[g]&&n.setText(v+m,h.address_lines[g])}),n.setText(v+f.postcode,(h.postcode||"").slice(0,5)),n.setText(v+f.town,h.town||""),n.setText(v+f.country,h.country||"")},u=e.nominee;r.nominees.forEach((f,p)=>{let h=p+1,v=u.prefix.replace("{i}",h);s(u,h,f),f.relationship&&(n.setChoice(v+u.relationship.field,u.relationship.states[f.relationship]),f.relationship==="others"&&n.setText(v+u.relationship_other,f.relationship_other||"")),f.share!==null&&f.share!==void 0&&n.setText(v+u.share,String(Math.round(f.share*1e6)/1e6))});let d=e.trustee,o=r.part2||(r.trustees.length?"appoint":"");o&&e.part2_action.states[o]&&n.setChoice(e.part2_action.field,e.part2_action.states[o]),r.trustees.forEach((f,p)=>{let h=p+1,v=d.prefix.replace("{i}",h);s(d,h,f),(f.cob_malaysia===!0||f.cob_malaysia===!1)&&(n.setChoice(v+d.country_of_birth.field,d.country_of_birth.states[f.cob_malaysia?"malaysian":"others"]),f.cob_malaysia||n.setText(v+d.country_of_birth_other,f.cob_other||"")),f.tel_no&&(n.setText(v+d.tel_no,((f.tel_country||"")+f.tel_no).slice(0,12)),n.setText(v+d.tel_country,f.tel_country==="60"?"MALAYSIA":""),n.setChoice(v+d.tel_type.field,d.tel_type.states[f.tel_type])),n.setText(v+d.signature_name,f.name)});let l=r.witness||{};if(l.name){let f=e.witness_agent;n.setText(f.name_p3,l.name.toUpperCase()),n.setText(f.iac_p3,String(l.iac||"").slice(0,7)),r.trustees.length&&(n.setText(f.name_p4,l.name.toUpperCase()),n.setText(f.iac_p4,String(l.iac||"").slice(0,7)))}let c=f=>{let[p,h,v]=String(f).split("-");return{y:p,m:h,d:v}};if(r.sign_date&&e.declaration_date){let{y:f,m:p,d:h}=c(r.sign_date);n.setText(e.declaration_date,h+p+f)}if(r.trustees.length&&r.trustee_date&&e.trustee_date){let{y:f,m:p,d:h}=c(r.trustee_date);[h,p,f.slice(-2)].forEach((v,m)=>n.setText(e.trustee_date[m],v))}return n.hide(e.hide_on_output||[]),{ff:n,bytes:await n.save()}}async function ST(t){let e=await Hl.open(t),r={};for(let[n,{obj:i}]of e.fields){let a=i.lookup(Ke("V"));a&&String(a)!=="/Off"&&(r[n]=Df(a))}return r}cb.exports={fillNomination:xT,readFields:ST}});var fb=V((h2,hb)=>{"use strict";var bt=Ia(),Ta=t=>t==null||t==="";function AT({deal:t,client:e={},chats:r=[],cfg:n,fmap:i,today:a}){let s=new bt.Issues;t._wa_only?s.add("WARNING","CRM","No Closed-Won life deal in CRM for this customer yet - confirm the product and proposal no. before release"):!Object.keys(e).length&&!t._manual&&s.add("WARNING","Policyholder",`Client ${t.client_id} not found in clients export - details taken from WhatsApp`);let u=null;if(r.length){u={nominees:null,trustees:null,proposer:{},source:{},unparsed:[],media:0,notes:[]};for(let b of r){for(let x of["nominees","trustees"])b[x]&&(u[x]=b[x]);Object.assign(u.proposer,b.proposer),Object.assign(u.source,b.source),u.unparsed.push(...b.unparsed),u.media+=b.media,u.notes.push(...b.notes||[])}}let d=u?u.proposer:{},o=e.address?{address:e.address||"",postcode:e.postcode||"",town:e.town||"",country:e.country||""}:null,l=d.address?bt.parseAddress(d)[0]:null,c={name:e.client_name||d.name||t.client_name||"",nric:e.nric||d.id||"",muslim:Ta(e.muslim)?bt.yesNo(d.muslim):bt.yesNo(e.muslim),status:bt.normStatus(e.marital_status)||bt.normStatus(d.marital_status),children:Ta(e.children)?bt.normChildren(d.children):bt.normChildren(e.children),address_block:o||l,race:d.race||""},f=t._manual?"policy details":"CRM",p=bt.parseNric(e.nric,a).value,h=bt.parseNric(d.id,a).value;p&&h&&p!==h&&s.add("ERROR","Policyholder",`NRIC in ${f} (${bt.maskId(p)}) differs from NRIC in WhatsApp (${bt.maskId(h)}) - wrong chat or wrong record?`);for(let[b,x,E,C]of[["muslim",e.muslim,d.muslim,bt.yesNo],["marital status",e.marital_status,d.marital_status,bt.normStatus],["children",e.children,d.children,bt.normChildren]])!Ta(x)&&!Ta(E)&&C(x)!==C(E)&&s.add("ERROR","Policyholder",`${t._manual?"Policy details say":"CRM says"} ${b} = '${x}' but customer's WhatsApp says '${E}' - confirm${t._manual?"":" and update CRM"}`);if(d.dob){let b=bt.parseDate(d.dob),x=bt.parseNric(c.nric,a);b&&x.dob&&b!==x.dob&&s.add("ERROR","Policyholder","Date of birth in WhatsApp does not match the NRIC","please confirm your NRIC number and date of birth")}Ta(e.muslim)&&Ta(d.muslim)&&c.race&&s.add("INFO","Policyholder",`Race given as '${c.race}' - the agent does not infer religion from race; Muslim Yes/No must be confirmed`);let v=t.proposal_no||d.proposal_no||"",m=t.policy_no||d.policy_no||"";!v&&!m&&s.add("WARNING","Policy","No proposal/policy number - write it in by hand before submission");let g,y,F;if(!u)g="WAITING_FOR_CUSTOMER",[y,F]=[[],[]],bt.validateCase(c,[],[],a,i,s),s.items=s.items.filter(b=>b.who!=="Nominees");else{u.media&&s.add("INFO","WhatsApp",`Customer sent ${u.media} attachment(s) (e.g. IC photo) - not read by the agent; check by eye`);for(let b of u.notes)s.add("INFO","WhatsApp",b);for(let[b,x]of u.unparsed)s.add("WARNING","WhatsApp",`Message${b?` at ${b}`:""} not in labelled format, not used: \u201C${x.slice(0,120)}\u201D`);[y,F]=bt.validateCase(c,u.nominees,u.trustees,a,i,s),g=s.hasErrors()?"NEEDS_INFO":"READY_FOR_APPROVAL"}return{deal_id:t.deal_id,client_id:t.client_id||"",client_name:c.name,owner:t.owner||"",product:t.product||"",amount:t.amount||"",close_date:t.close_date||"",proposal_no:v,policy_no:m,proposer:c,nominees:y,trustees:F,issues:s.items,status:g,sources:u?u.source:{},witness:(n.witness_agent_by_rm||{})[t.owner||""]||n.witness_agent}}function FT(t,e){let r=[];for(let i of t.issues)i.level==="ERROR"&&i.ask&&!r.includes(i.ask)&&r.push(i.ask);let n=t.client_name?bt.title(t.client_name):"";return t.status==="WAITING_FOR_CUSTOMER"?(e||"").replace(/\{first_name\}/g,n).replace(/\{product\}/g,t.product||"insurance"):r.length?[`Hi ${n}, thank you for the nominee details for your ${t.product||"new"} policy. To complete the nomination form I still need:`,...r.map((i,a)=>`${a+1}. ${i[0].toUpperCase()}${i.slice(1)}`),"You can reply in the same format as before. Thank you!"].join(`
 `):""}hb.exports={buildCase:AT,followupMessage:FT}});var gb=V((f2,pb)=>{"use strict";var yr=Ia(),PT=t=>String(t).replace(/\d(?=\d{4})/g,"*");function Ef(t){return t.replace(/(?:\b\d\b ?-? ?){6,}/g,e=>e.replace(/ +/g,"")+" ")}function wT(t){let e=[];for(let r of t){if(!r.str||!r.str.trim())continue;let n=r.transform[5],i=e.find(a=>Math.abs(a.y-n)<3);i||e.push(i={y:n,items:[]}),i.items.push(r)}return e.sort((r,n)=>n.y-r.y),e.map(r=>{r.items.sort((a,s)=>a.transform[4]-s.transform[4]);let n="",i=null;for(let a of r.items){let s=a.transform[4];i!==null&&(n+=s-i>15?"	":" "),n+=a.str.trim(),i=s+(a.width||0)}return n}).join(`
 `)}function DT(t,e){let r={},n=[],i=p=>{let h=t[p];if(h===void 0){let v=Object.keys(t).find(m=>m.endsWith(p)||m.endsWith("."+p));h=v?t[v]:void 0}return h==null?"":String(h).trim()},a=p=>{let h=i(p);return!h||/^\/?off$/i.test(h)?"":h.startsWith("/")?h:"/"+h},s=p=>{let h=a(p.field);return Object.keys(p.states).find(v=>p.states[v]===h)||""},u=e.proposer,d=(p,h,v)=>{h&&(r[p]=h,n.push(v))};d("client_name",i(u.signature_name)||i(u.name),"Name"),d("nric",i(u.nric),"NRIC"),d("policy_no",i(e.policy_no),"Policy No."),d("proposal_no",i(e.proposal_no),"Proposal No.");let o=s(u.muslim);d("muslim",o?o==="yes"?"Yes":"No":"","Muslim");let l=s(u.status);d("marital_status",l?yr.title(l):"","Marital status");let c=s(u.children);c==="no"?d("children","0","Children"):c==="yes"&&d("children",String(parseInt(i(u.children_count),10)||""),"Children");let f=[u.name,u.nric,e.policy_no].some(p=>Object.keys(t).some(h=>h===p||h.endsWith(p)));return{values:r,found:n,ambiguous:[],source:"form fields",isNomineeForm:f}}var CT=/\b(name|nama|nric|ic|passport|policy|polisi|proposal|cadangan|address|alamat|date|tarikh|signature|tandatangan|no\.?|number|plan|sum|premium|agent|telephone|phone|email|status|religion|gender|occupation|hayat|diinsuranskan|diasuranskan|insuranskan|pemegang|pemilik|pencadang|penama|butiran|maklumat|assured|insured|owner|holder|details|particulars|as per)\b/i,ET=/^[A-Za-z][A-Za-z'.@/-]*(?:\s+[A-Za-z][A-Za-z'.@/-]*){1,7}$/;function Cf(t){return t=String(t||"").replace(/\s+/g," ").trim(),ET.test(t)&&!CT.test(t)&&t.length<=80?t:""}function Hs(t,e,r,n=i=>i){if(!t.length)return"";let i=Math.max(...t.map(s=>s.score)),a=[...new Set(t.filter(s=>s.score===i).map(s=>s.value))];return a.length===1?a[0]:(r.push(`${e}: found ${a.map(n).join(" / ")} - not filled, type the right one`),"")}function TT(t,e){let r=t.split(`
 `),n={},i=[],a=[],s=[],u=(v,m,g)=>{m&&(n[v]=m,i.push(g))},d=t.match(/Policy Detail Information for P\/N:\s*(\d{8,12})/i);u("policy_no",d&&d[1],"Policy No");let o=/^\s*(Proposer|Life Assured)\s*\t?\s*([A-Z][A-Z '@.\/()-]*?[A-Z)])\s+([MF])\s*\t\s*(\d{6}-?\d{2}-?\d{4})/,l={};for(let v of r){let m=v.match(o);m&&!l[m[1]]&&(l[m[1]]={name:m[2].trim(),nric:yr.parseNric(m[4],e).value,line:v})}let c=l.Proposer||l["Life Assured"];if(c){u("client_name",c.name,"Name"),u("nric",c.nric,"NRIC");let v=l["Life Assured"];if(v&&v.nric===c.nric){let m=v.line.match(/\b(Non-?\s?Muslim|Muslim)\b/i);m&&u("muslim",/non/i.test(m[1])?"No":"Yes","Muslim")}else v&&a.push(`Life assured (${v.name}) is not the policyowner - Muslim/Non-Muslim not taken from the PDF`)}let f=r.findIndex(v=>/^\s*PAYER DETAILS/i.test(v)),p=r.findIndex((v,m)=>m>f&&/^\s*(PAYEE DETAILS|ASSIGNEE|AGENT DETAILS)/i.test(v));if(f>=0){let v=r.slice(f,p>0?p:f+12),m=v.join(`
@@ -621,6 +662,12 @@ function syncDates() {
   $("trDateWrap").hidden = !hasTrustee; $("trSameWrap").hidden = !hasTrustee;
 }
 function applyDates(c) {
+  // Part 2 (trustee) choice is checked here too, since it comes from the same step-1/2 inputs
+  c.part2 = $("part2").value;
+  if (c.part2 && c.part2 !== "revoke" && !c.trustees.length) c.issues.push({ level: "ERROR", who: "Trustees", msg: `Part 2 set to "${$("part2").selectedOptions[0].text}" but no trustee is listed - add the trustee or change Part 2`, ask: null });
+  if (c.part2 === "revoke" && c.trustees.length) c.issues.push({ level: "ERROR", who: "Trustees", msg: "Part 2 is \"Revoke all existing trustees\" but trustees are listed - remove them or choose another Part 2 option", ask: null });
+  if (c.part2 && c.part2 !== "appoint") c.issues.push({ level: "INFO", who: "Trustees", msg: `Part 2: ${$("part2").selectedOptions[0].text}`, ask: null });
+  if (c.issues.some((i) => i.level === "ERROR") && c.status === "READY_FOR_APPROVAL") c.status = "NEEDS_INFO";
   syncDates();
   c.sign_date = $("sign_date").value || "";
   c.trustee_date = $("trustee_same").checked ? c.sign_date : ($("trustee_date").value || "");
@@ -634,6 +681,7 @@ function applyDates(c) {
   else if (!/^\d{7}$/.test(String(w.iac || ""))) c.issues.push({ level: "WARNING", who: "Witness", msg: `Witness IAC No. '${w.iac || ""}' should be 7 digits - check it`, ask: null });
 }
 $("sign_date").addEventListener("input", () => { syncDates(); schedule(); });
+$("part2").addEventListener("change", () => schedule());
 $("trustee_date").addEventListener("input", () => schedule());
 $("trustee_same").addEventListener("change", () => { if (!$("trustee_same").checked && !$("trustee_date").value) $("trustee_date").value = $("sign_date").value; syncDates(); schedule(); if (!$("trustee_same").checked) $("trustee_date").focus(); });
 function resetDates(d = {}) {
@@ -735,7 +783,7 @@ function saveCase() {
   cases[caseId] = Object.assign(cases[caseId] || {}, {
     id: caseId, name: name || "(name not given yet)", nric4: (current.proposer.nric_clean || "").slice(-4), status: current.status, updated: Date.now(),
     data: { fields: Object.fromEntries(FIELDS.map((k) => [k, $(k).value])), fromPdf: FIELDS.filter((k) => $(k).dataset.src === "pdf"), msg: $("msg").value, people, edited,
-      dates: { sign_date: $("sign_date").value, trustee_same: $("trustee_same").checked, trustee_date: $("trustee_date").value },
+      dates: { sign_date: $("sign_date").value, trustee_same: $("trustee_same").checked, trustee_date: $("trustee_date").value }, part2: $("part2").value,
       witness: { name: $("w_name").value, iac: $("w_iac").value, nric: $("w_nric").value, tel: $("w_tel").value },
       forms: { sel: formSel, extras: formExtras, la: { same: $("la_same").checked, name: $("la_name").value, nric: $("la_nric").value, old: $("la_old").value, tel: $("la_tel").value, address: $("la_address").value } } },
   });
@@ -754,6 +802,7 @@ function resetScreen() {
   renderEditor();
   resetDates();
   resetTiles();
+  $("part2").value = "";
   setWitness(witnessDefault()); editWitness(!$("w_name").value);
   resetForms();
 }
@@ -767,6 +816,7 @@ function openCase(id) {
   people = c.data.people || { nominees: [], trustees: [] }; edited = !!c.data.edited; lastMsg = $("msg").value;
   msgPeople = null; renderEditor();
   resetDates(c.data.dates || {});
+  $("part2").value = c.data.part2 || "";
   if (c.data.witness && c.data.witness.name) setWitness(c.data.witness);
   resetForms(c.data.forms || {});
   closeList(); evaluate();
@@ -1182,6 +1232,37 @@ function resetForms(d = {}) {
   for (const k of ["la_name", "la_nric", "la_old", "la_tel", "la_address"]) $(k).value = la[k.slice(3)] || "";
   renderFormList(); updateForms();
 }
+
+// ---- help
+$("openHelp").onclick = () => { $("helpDrawer").hidden = false; $("closeHelp").focus(); };
+$("closeHelp").onclick = () => { $("helpDrawer").hidden = true; };
+$("helpDrawer").addEventListener("click", (e) => { if (e.target === $("helpDrawer")) $("helpDrawer").hidden = true; });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("helpDrawer").hidden) $("helpDrawer").hidden = true; });
+
+// ---- customer list backup (a JSON file the user keeps; import merges by customer, newest copy wins)
+$("exportCases").onclick = () => {
+  const cases = loadCases(), n = Object.keys(cases).length;
+  if (!n) { toast("No customers to back up yet"); return; }
+  const name = `Nominee_App_backup_${todayIso()}.json`;
+  const url = URL.createObjectURL(new Blob([JSON.stringify({ app: "nominee-form", version: 1, exported: new Date().toISOString(), cases }, null, 1)], { type: "application/json" }));
+  const a = document.createElement("a"); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+  toast(`Backed up ${n} customer${n > 1 ? "s" : ""} - keep the file private`);
+};
+$("importCases").addEventListener("change", async (ev) => {
+  const f = ev.target.files[0]; ev.target.value = ""; if (!f) return;
+  try {
+    const j = JSON.parse(await f.text());
+    if (!j || j.app !== "nominee-form" || typeof j.cases !== "object") throw new Error("this is not a Nominee Form App backup");
+    const cases = loadCases(); let added = 0, updated = 0;
+    for (const [id, c] of Object.entries(j.cases)) {
+      if (!c || !c.data) continue;
+      if (!cases[id]) { cases[id] = c; added++; } else if ((c.updated || 0) > (cases[id].updated || 0)) { cases[id] = c; updated++; }
+    }
+    saveCases(cases); renderList();
+    toast(`Imported: ${added} new, ${updated} updated`);
+  } catch (e) { alert("Could not import: " + e.message); }
+});
 
 // ---- "Install app" (Android / desktop Chrome & Edge offer this; on iPhone use Safari > Share > Add to Home Screen)
 let installPrompt = null;
