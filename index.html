@@ -45,6 +45,7 @@ svg{flex:none}
 .brand h1{font:600 20px/1.2 "Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;margin:0;letter-spacing:.1px}
 .brand .sub{color:var(--on-navy-muted);font-size:12.5px;margin-top:2px}
 .brand .grow{flex:1 1 220px;min-width:0}
+.ver{display:inline-block;background:rgba(255,255,255,.12);border-radius:99px;padding:0 8px;color:var(--on-navy);font-weight:600}
 .chip-lock{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--on-navy);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);padding:5px 10px;border-radius:999px}
 .btn-ghost{font:inherit;font-size:13px;color:var(--on-navy);background:transparent;border:1px solid rgba(255,255,255,.28);border-radius:10px;padding:7px 12px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
 .btn-ghost:hover{background:rgba(255,255,255,.08)}
@@ -264,7 +265,7 @@ body.noscroll{overflow:hidden}
 <header class="top"><div class="in">
   <div class="brand">
     <div class="logo" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="m9 15 2 2 4-4"/></svg></div>
-    <div class="grow"><h1>Nominee Form</h1><div class="sub">Appointment / Change of Nominee(s) · GE form NBZ-FNOMI-V07-082025</div></div>
+    <div class="grow"><h1>Nominee Form</h1><div class="sub">Appointment / Change of Nominee(s) · GE form NBZ-FNOMI-V07-082025 · <span class="ver">Version 28 Oct 2026, 10:17</span></div></div>
     <span class="chip-lock" title="Customer data is processed in this browser only"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Stays on this PC</span>
     <button class="btn-ghost" id="openList" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Customers <span class="count" id="listCount">0</span></button>
     <button class="btn-ghost" id="clearAll" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>New customer</button>
