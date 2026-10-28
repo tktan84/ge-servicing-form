@@ -48,7 +48,7 @@ svg{flex:none}
 
 /* ---------- header + stepper */
 .top{background:linear-gradient(135deg,var(--navy),var(--navy-2));color:var(--on-navy)}
-.top .in{max-width:1240px;margin:0 auto;padding:18px 20px 0}
+.top .in{max-width:1240px;margin:0 auto;padding:16px 20px}
 .brand{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .logo{width:42px;height:42px;border-radius:12px;background:var(--accent);display:grid;place-items:center;box-shadow:0 6px 16px rgba(200,16,46,.35)}
 .brand h1{font:600 20px/1.2 "Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;margin:0;letter-spacing:.1px}
@@ -317,25 +317,17 @@ body.noscroll{overflow:hidden}
 
 .toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,10px);background:var(--navy);color:#fff;padding:10px 16px;border-radius:12px;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;z-index:50;box-shadow:var(--shadow);font-weight:600;font-size:13px}
 .toast.show{opacity:1;transform:translate(-50%,0)}
-@media(max-width:560px){.top .in{padding:14px 14px 0}main{padding:14px}.steps li{min-width:120px;padding:10px}.steps li span.d{display:none}.card-h{padding:14px 14px 0}.card-b{padding:10px 14px 14px}.sec{padding:12px 14px}}
+@media(max-width:560px){.top .in{padding:12px 14px}main{padding:14px}.steps li{min-width:120px;padding:10px}.steps li span.d{display:none}.card-h{padding:14px 14px 0}.card-b{padding:10px 14px 14px}.sec{padding:12px 14px}}
 </style>
 </head>
 <body>
 <header class="top"><div class="in">
   <div class="brand">
     <div class="logo" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="m9 15 2 2 4-4"/></svg></div>
-    <div class="grow"><h1>GE Servicing Form</h1><div class="sub">Nominee form and GE servicing forms, filled in one place · <span class="ver">Version 28 Oct 2026, 12:29</span></div></div>
-    <span class="chip-lock" title="Customer data is processed in this browser only"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Stays on this PC</span>
+    <div class="grow"><h1>GE Servicing Form</h1><div class="sub">Nominee form and GE servicing forms, filled in one place · <span class="ver">Version 28 Oct 2026, 13:22</span></div></div>
     <button class="btn-ghost" id="installBtn" type="button" hidden><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Install app</button>
-    <button class="btn-ghost" id="openHelp" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17h.01"/></svg>Help</button>
     <button class="btn-ghost" id="openList" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Customers <span class="count" id="listCount">0</span></button>
-    <button class="btn-ghost" id="clearAll" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>New customer</button>
   </div>
-  <ol class="steps" id="steps">
-    <li data-step="1" class="active"><span class="n">1</span><span><b>Policyowner</b><span class="d">Upload PDF or type</span></span></li>
-    <li data-step="2"><span class="n">2</span><span><b>Nominees</b><span class="d">Photo, message or paste</span></span></li>
-    <li data-step="3"><span class="n">3</span><span><b>Check &amp; preview</b><span class="d">Then download</span></span></li>
-  </ol>
 </div></header>
 
 <div class="quick" id="quick" role="region" aria-label="Upload">
@@ -498,7 +490,7 @@ body.noscroll{overflow:hidden}
 </div>
 <div class="drawer" id="drawer" hidden role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
   <div class="drawer-in">
-    <div class="drawer-h"><h2 id="drawerTitle">Customers</h2><button class="btn" id="closeList" type="button">Close</button></div>
+    <div class="drawer-h"><h2 id="drawerTitle">Customers</h2><button class="btn primary" id="clearAll" type="button">+ New customer</button><button class="btn" id="closeList" type="button">Close</button></div>
     <div class="drawer-b" id="custList"></div>
     <div class="drawer-f">
       <div class="row" style="margin:0 0 8px">
@@ -506,27 +498,6 @@ body.noscroll{overflow:hidden}
         <label class="btn" style="flex-direction:row">Import backup<input type="file" id="importCases" accept=".json,application/json" hidden></label>
       </div>
       Saved automatically in this browser on this device only. Export a backup before changing phone or clearing the browser; the backup file contains customers' details, so keep it private. Customers whose form was downloaded more than 30 days ago are removed automatically. Delete a customer with ✕.
-    </div>
-  </div>
-</div>
-<div class="drawer" id="helpDrawer" hidden role="dialog" aria-modal="true" aria-labelledby="helpTitle">
-  <div class="drawer-in">
-    <div class="drawer-h"><h2 id="helpTitle">How to use · 使用方法</h2><button class="btn" id="closeHelp" type="button">Close</button></div>
-    <div class="drawer-b help">
-      <h3>1 · Policyowner 保单持有人</h3>
-      <p>Tap <b>Policyowner PDF</b> at the top and choose the ePartner <b>Online Enquiry</b> printout (or e-Policy / GE form). Name, NRIC, policy no., Muslim, address fill in by themselves (green boxes). Type anything missing: tel, marital status, children.<br><span class="zh">点顶部「Policyowner PDF」上传 ePartner Online Enquiry，资料会自动填入（绿色格子）。缺的资料（电话、婚姻状况、孩子人数）自己补上。</span></p>
-      <p><b>Signing date</b> defaults to today. <b>Witness</b> is TAN TECK KANG / 6180237 - tap <b>Change</b> for another agent (this customer only).<br><span class="zh">签名日期默认今天；见证人默认 TAN TECK KANG，点 Change 可换其他 agent（只限这位客户）。</span></p>
-      <h3>2 · Nominees 受益人</h3>
-      <p>Tap <b>Screenshot / photo</b> (the customer's WhatsApp reply) or <b>Copied message</b>, or paste the message. Nominees appear as boxes below - fix anything there. Red tags on the right (e.g. <b>Relationship?</b>) jump to the box to fix.<br><span class="zh">上传客户 WhatsApp 截图或消息，受益人会出现在下方格子里，可直接修改。右边红色标签点一下就跳到要改的地方。</span></p>
-      <p>Trustee changes: choose <b>Trustee (form Part 2)</b> - appoint, add, revoke & appoint, or revoke.<br><span class="zh">更换信托人：在「Trustee (form Part 2)」选择委任、追加、撤销后委任或撤销。</span></p>
-      <h3>3 · Forms 表格</h3>
-      <p>Tick the forms you need - the nominee form and any GE form (Great ID, PSF01, PSF33, EASI-PAY, NFTF, questionnaires, O&amp;G, clinical abstract). Fill the extra boxes shown under a ticked form. Then tap the one <b>Preview</b> button, check every page, and <b>download</b> - all ticked forms come out as one PDF.<br><span class="zh">勾选需要的表格（提名表格和其他 GE 表格），填写额外资料，按一个 Preview 按钮预览，确认后下载成一份 PDF。</span></p>
-      <p>Left for hand-writing: signatures, card numbers, health answers, the doctor's report.<br><span class="zh">签名、信用卡号、健康问卷答案、医生报告留给本人亲手填写。</span></p>
-      <h3>Customers 客户列表</h3>
-      <p>Every customer is saved on this device. <b>Customers</b> reopens one; <b>New customer</b> starts fresh. Use <b>Export backup</b> in the Customers list to keep a copy, and <b>Import backup</b> on a new phone or PC.<br><span class="zh">客户资料自动保存在这台设备。换手机或电脑前，在 Customers 里按 Export backup 备份，到新设备再 Import backup。</span></p>
-      <h3>Privacy 隐私</h3>
-      <p>Everything stays on this device - nothing is uploaded. Reading a photo needs internet the first time (to load the reader); the photo itself never leaves the device.<br><span class="zh">所有资料只留在这台设备，不会上传。</span></p>
-      <p class="muted small">Check the version under the title; if the page looks old, refresh (Ctrl+F5, or pull down on a phone).</p>
     </div>
   </div>
 </div>
@@ -884,6 +855,7 @@ $("drawer").addEventListener("click", (e) => {
 $("drawer").addEventListener("keydown", (e) => { const row = e.target.closest("[data-open]"); if (row && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openCase(row.dataset.open); } });
 
 function updateSteps() {
+  if (!document.querySelector("#steps")) return;
   const c = current, pp = c ? c.proposer : {};
   const s1 = !!(pp.name && pp.nric_clean), s2 = !!(c && c.nominees.length), s3 = !!(c && c.status === "READY_FOR_APPROVAL");
   const done = [s1, s2, s3], active = !s1 ? 1 : !s2 ? 2 : 3;
@@ -1048,6 +1020,8 @@ $("clearAll").onclick = () => {
   resetScreen();
   caseId = null;   // the previous customer stays saved in the Customers list
   evaluate();
+  closeList();
+  toast("New customer - the previous one is saved in Customers");
   window.scrollTo({ top: 0, behavior: "smooth" });
 };
 $("pvBack").onclick = closePreview;
@@ -1280,12 +1254,6 @@ function resetForms(d = {}) {
   for (const k of ["la_name", "la_nric", "la_old", "la_tel", "la_address"]) $(k).value = la[k.slice(3)] || "";
   renderFormList(); updateForms();
 }
-
-// ---- help
-$("openHelp").onclick = () => { $("helpDrawer").hidden = false; $("closeHelp").focus(); };
-$("closeHelp").onclick = () => { $("helpDrawer").hidden = true; };
-$("helpDrawer").addEventListener("click", (e) => { if (e.target === $("helpDrawer")) $("helpDrawer").hidden = true; });
-document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("helpDrawer").hidden) $("helpDrawer").hidden = true; });
 
 // ---- customer list backup (a JSON file the user keeps; import merges by customer, newest copy wins)
 $("exportCases").onclick = () => {
