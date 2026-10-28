@@ -1,4 +1,4 @@
-# Nominee Form App
+# GE Servicing Form (Nominee Form App)
 
 Fills the Great Eastern **Appointment / Change of Nominee(s)** form (NBZ-FNOMI-V07-082025) from:
 
